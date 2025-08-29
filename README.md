@@ -1,1 +1,100 @@
 # sashifai
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DQ風タップゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+    }
+    canvas {
+      margin-top: 20px;
+      background: #87CEEB;
+      image-rendering: pixelated;
+    }
+    .controls {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      grid-template-rows: repeat(2, 60px);
+      gap: 5px;
+    }
+    .controls button {
+      font-size: 24px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .controls #up    { grid-column: 2; grid-row: 1; }
+    .controls #left  { grid-column: 1; grid-row: 2; }
+    .controls #down  { grid-column: 2; grid-row: 2; }
+    .controls #right { grid-column: 3; grid-row: 2; }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="320" height="320"></canvas>
+  <div class="controls">
+    <button id="up">▲</button>
+    <button id="left">◀︎</button>
+    <button id="down">▼</button>
+    <button id="right">▶︎</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const tileSize = 32;
+    const map = [
+      [0,0,0,0,0,0,0,0,0,0],
+      [0,1,1,0,0,0,1,1,1,0],
+      [0,0,0,0,1,0,0,0,1,0],
+      [0,1,0,0,1,1,1,0,1,0],
+      [0,1,0,0,0,0,0,0,0,0],
+      [0,0,0,1,1,0,1,1,1,0],
+      [0,1,0,0,0,0,0,0,1,0],
+      [0,1,1,1,1,1,1,0,1,0],
+      [0,0,0,0,0,0,0,0,1,0],
+      [0,0,0,0,1,1,0,0,0,0],
+    ]; // 0:草, 1:壁
+
+    const hero = { x: 1, y: 1 };
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < map.length; y++) {
+        for (let x = 0; x < map[0].length; x++) {
+          ctx.fillStyle = map[y][x] === 1 ? '#654321' : '#00AA00';
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
+      }
+      // 主人公
+      ctx.fillStyle = '#FFD700';
+      ctx.fillRect(hero.x * tileSize + 4, hero.y * tileSize + 4, tileSize - 8, tileSize - 8);
+    }
+
+    function move(dx, dy) {
+      const nx = hero.x + dx;
+      const ny = hero.y + dy;
+      if (nx < 0 || ny < 0 || nx >= map[0].length || ny >= map.length) return;
+      if (map[ny][nx] === 1) return;
+      hero.x = nx;
+      hero.y = ny;
+      draw();
+    }
+
+    document.getElementById('up').onclick    = () => move(0, -1);
+    document.getElementById('down').onclick  = () => move(0,  1);
+    document.getElementById('left').onclick  = () => move(-1, 0);
+    document.getElementById('right').onclick = () => move( 1, 0);
+
+    draw();
+  </script>
+</body>
+</html>
